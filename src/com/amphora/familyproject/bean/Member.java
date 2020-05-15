@@ -8,6 +8,7 @@ public class Member {
 	private int age;
 	private String name;
 	private Gender gender;
+	private Member spouse;
 	/**
 	 * Data type of variable "parents" I took array because parents
 	 * would be only two or fixed.
@@ -28,7 +29,7 @@ public class Member {
 	 * proper place.
 	 * 
 	 * @param name of the family member
-	 * @param sex of the member
+	 * @param gender of the member
 	 * @param age of the member
 	 * @param parents of the member
 	 */
@@ -39,47 +40,42 @@ public class Member {
 		this.age = age;
 		this.parents = parents;
 	}
-
 	public int getAge() {
 		return age;
 	}
-
 	public void setAge(int age) {
 		this.age = age;
 	}
-
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
 	public Gender getGender() {
 		return gender;
 	}
-
 	public void setGender(Gender gender) {
 		this.gender = gender;
 	}
-
+	public Member getSpouse() {
+		return spouse;
+	}
+	public void setSpouse(Member spouse) {
+		this.spouse = spouse;
+	}
 	public Member[] getParents() {
 		return parents;
 	}
-
 	public void setParents(Member[] parents) {
 		this.parents = parents;
 	}
-
 	public List<Member> getKids() {
 		return kids;
 	}
-
 	public void setKids(List<Member> kids) {
 		this.kids = kids;
 	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -89,11 +85,12 @@ public class Member {
 		result = prime * result + ((kids == null) ? 0 : kids.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + Arrays.hashCode(parents);
+		result = prime * result + ((spouse == null) ? 0 : spouse.hashCode());
 		return result;
 	}
-
 	@Override
 	public boolean equals(Object obj) {
+		
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -105,24 +102,16 @@ public class Member {
 			return false;
 		if (gender != other.gender)
 			return false;
-		if (kids == null) {
-			if (other.kids != null)
-				return false;
-		} else if (!kids.equals(other.kids))
-			return false;
 		if (name == null) {
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (!Arrays.equals(parents, other.parents))
-			return false;
 		return true;
 	}
-
 	@Override
 	public String toString() {
-		return "Member [age=" + age + ", name=" + name + ", gender=" + gender + ", parents=" + Arrays.toString(parents)
-				+ ", kids=" + kids + "]";
+		return "Member [age=" + age + ", name=" + name + ", gender=" + gender + ", spouse=" + spouse + ", parents="
+				+ Arrays.toString(parents) + ", kids=" + kids + "]";
 	}
 }
