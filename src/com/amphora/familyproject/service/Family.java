@@ -1,5 +1,6 @@
 package com.amphora.familyproject.service;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -15,7 +16,6 @@ public class Family {
 	public Family(Partners head) {
 		
 		Objects.requireNonNull(head);
-		
 		if (Objects.isNull(head.getHubby())
 				&& Objects.isNull(head.getWifey())) {
 			throw new InvalidDataException("There should be at least one member");
@@ -176,6 +176,19 @@ public class Family {
 			}
 		}
 		return null;
+	}
+	
+	public void sort(Partners headMembers) {
+		
+		if (Objects.nonNull(headMembers)
+				&& Objects.nonNull(headMembers.getChildren())) {
+			
+			Collections.sort(headMembers.getChildren(),
+					(child1, child2) -> child2.getAge() - child1.getAge());
+			for (Member child: headMembers.getChildren()) {
+				sort(child.getPartner());
+			}
+		}
 	}
 	public Partners getFamilyHead() {
 		return head;
