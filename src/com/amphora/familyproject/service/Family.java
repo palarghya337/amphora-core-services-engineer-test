@@ -1,127 +1,183 @@
 package com.amphora.familyproject.service;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import com.amphora.familyproject.bean.Member;
+import com.amphora.familyproject.bean.Member.Gender;
+import com.amphora.familyproject.bean.Partners;
 import com.amphora.familyproject.exception.InvalidDataException;
 
 public class Family {
 
-	private Member head;
-	public Family(Member head) {
-		this.head = copyMember(head);
+	private Partners head;
+	public Family(Partners head) {
+		
+		Objects.requireNonNull(head);
+		
+		if (Objects.isNull(head.getHubby())
+				&& Objects.isNull(head.getWifey())) {
+			throw new InvalidDataException("There should be at least one member");
+		}
+		this.head = head;
 	}
 	/**
-	 * Method to insert a new member into family
+	 * Method to add a new member in the family. To add new member
+	 * into the family tree you need to pass parents information
+	 * or partners information (in case if you want to add only
+	 * spouse). You can add all these information inside the
+	 * "member" variable.
 	 * 
-	 * @param member to add into a family.
-	 * @return List<Member> of found parents
-	 * @throws If parent of new member is not given or given
-	 * more than two parents then throws InvalidDataException
+	 * @param member variable contain the new member details.
+	 * @param inLawMember variable, when true, the method will
+	 * find given spouse of new member and create a {@linkplain Partners}
+	 * object and set proper value in that object. If variable is
+	 * false then it will find the parent of the given member
+	 * and set the child of the parent.
+	 * @return {@linkplain Member} object contains the updated data of new member.
+	 * If given parent or spouse (name, gender, age) does not
+	 * matches with the available family members then returns null.
 	 */
-	public List<Member> insert(Member member) {
+	public Member addMember(Member member, boolean inLawMember) {
 		
-		if (head == null) {
-			head = copyMember(member);
+		if (inLawMember) {
+			return addSpouse(member);
+		}
+		Partners newMemberParents = member.getParents();
+		if (Objects.isNull(newMemberParents)
+				|| (Objects.isNull(newMemberParents.getHubby())
+						&& Objects.isNull(newMemberParents.getWifey())) ) {
 			return null;
-		} else {
-			if (linkSpouse(member, head)) return null;
-			/*
-			 * If parent of new member is not given or given
-			 * more than two parents then throws InvalidDataException
-			 **/
-			Member[] parents = member.getParents();
-			if (parents == null || parents.length == 0 || parents.length > 2) {
-				throw new InvalidDataException("Invalid parents data.");
-			}
-			return searchAndInsert(member, head);
 		}
-	}
-	private Member copyMember(Member member) {
-		
-		Member copiedMember = new Member(member.getName(),
-				member.getGender(), member.getAge(),
-				member.getParents());
-		copiedMember.setSpouse(member.getSpouse());
-		copiedMember.setKids(member.getKids());
-		copiedMember.getSpouse().setSpouse(copiedMember);
-		return copiedMember;
-	}
-	private boolean linkSpouse(Member newMember, Member spouceOfNewMember) {
-		
-		boolean isSpouseAdded = false;
-		Member spouseOfCurrentMember = spouceOfNewMember.getSpouse();
-		Member spouseGiven = newMember.getSpouse();
-		if (spouseGiven != null && spouseOfCurrentMember == null
-				&& spouceOfNewMember.equals(spouseGiven)) {
-			
-			Member temp = copyMember(newMember);
-			temp.setSpouse(spouceOfNewMember);
-			spouceOfNewMember.setSpouse(temp);
-			isSpouseAdded = true;
+		Member newMember = addMember(member, head.getHubby());
+		if (Objects.isNull(newMember)) {
+			return addMember(member, head.getWifey());
 		}
-		return isSpouseAdded;
+		return newMember;
 	}
 	/**
+	 * @param newMember to add into the family.
+	 * @param parent of the new member.
+	 * @return {@linkplain Member} object contains the updated data
+	 * of new member. If given parent(name, gender, age) does not
+	 * matches with the available family members then returns null.
+	 */
+	private Member addMember(Member newMember, Member parent) {
+
+		if (Objects.isNull(parent)) {
+			return null;
+		}
+		Partners parents = parent.getPartner();
+		Partners newMemberParents = newMember.getParents();
+		if (newMemberParents.equals(parents)) {
+			/*
+			 * If current parent matches with the given parent
+			 * inside the newMember object then we add newMember
+			 * as a child of parent.
+			 **/
+			List<Member> children = parents.getChildren();
+			if (Objects.isNull(children)) {
+				children = new LinkedList<>();
+				parents.setChildren(children);
+			}
+			newMember.setParents(parents);
+			children.add(newMember);
+			return newMember;
+		}
+		return findAndAddMember(newMember, parents, false);
+	}
+	/**
+	 * Method to add spouse of a member.
+	 * @param member
+	 * @return {@linkplain Member} object contains the updated data
+	 * of member. If given spouse(name, gender, age) in the member
+	 * object does not matches with the available family members
+	 * then returns null.
+	 */
+	private Member addSpouse(Member member) {
+		
+		if (Objects.nonNull(member.getPartner())) {
+			Member addedMember = addSpouse(member, head.getHubby());
+			if (addedMember == null) {
+				return addSpouse(member, head.getWifey());
+			}
+			return addedMember;
+		}
+		return null;
+	}
+	/**
+	 * Overloaded method of {@link #addSpouse(Member)}
+	 * @param member
+	 * @param partner
+	 * @return {@linkplain Member}
+	 */
+	private Member addSpouse(Member member, Member partner) {
+		
+		if (Objects.nonNull(partner)) {
+			
+			Partners partnerOfNewMember = member.getPartner();
+			Member spouseOfNewMember = null;
+			Partners newPartner = null;
+			/*
+			 * Based on gender we have to create partners
+			 * object.
+			 **/
+			if (Gender.Male.equals(member.getGender())) {
+				spouseOfNewMember = partnerOfNewMember.getWifey();
+				newPartner = new Partners(member, partner);
+			} else {
+				spouseOfNewMember = partnerOfNewMember.getHubby();
+				newPartner = new Partners(partner, member);
+			}
+			if (spouseOfNewMember.equals(partner)) {
+				
+				partner.setPartner(newPartner);
+				member.setPartner(newPartner);
+				/*
+				 * We should not add this new member as a child
+				 * of his/her partners parent because spouse is
+				 * not considered as child. We could add spouse
+				 * as a family member.
+				 **/
+				return member;
+			} else {
+				return findAndAddMember(member,
+						partner.getPartner(), true);
+			}
+		}
+		return null;
+	}
+	/**
+	 * Method to find the parent of the new member.
 	 * @param newMember
 	 * @param parent
-	 * @param memberParentIndex
-	 * @return List<Member>
+	 * @param inLawMember
+	 * @return {@linkplain Member}
 	 */
-	private List<Member> searchAndInsert(Member newMember, Member parent) {//,int memberParentIndex) {
-
-		if (linkSpouse(newMember, parent)) {
-			return Arrays.asList(newMember.getParents());
-		}
-		List<Member> notFound = insert(newMember, parent);
-		if (!notFound.isEmpty()) {
-			
-			List<Member> kids = parent.getKids();
-			if (kids != null) {
-				for (Member kid: parent.getKids()) {
-					
-					notFound = searchAndInsert(newMember, kid);
-					if (notFound.size() < newMember.getParents().length) {
-						if (kid.getKids() == null) {
-							kids = new LinkedList<>();
-							parent.setKids(kids);
-						}
-						kid.getKids().add(copyMember(newMember));
-						return notFound;
-					}
+	private Member findAndAddMember(Member newMember,
+			Partners parent, boolean inLawMember) {
+		/*
+		 * Here we are using DFS to traverse the children.
+		 **/
+		if (Objects.nonNull(parent) &&
+				Objects.nonNull(parent.getChildren())) {
+			for (Member child: parent.getChildren()) {
+				
+				Member partner = null;
+				if (inLawMember) {
+					partner = addSpouse(newMember, child);
+				} else {
+					partner = addMember(newMember, child);
+				}
+				if (Objects.nonNull(partner)) {
+					return partner;
 				}
 			}
 		}
-		if (parent.getKids() == null) {
-			parent.setKids(new LinkedList<>());
-		}
-		parent.getKids().add(copyMember(newMember));
-		return notFound;
+		return null;
 	}
-	private List<Member> insert(Member newMember, Member parent) {
-		
-		List<Member> notFound = new LinkedList<>();
-		int count = 0;
-		for (Member dummyParents: newMember.getParents()) {
-			
-			notFound.add(dummyParents);
-			Member spouse = parent.getSpouse();
-			if (parent.equals(dummyParents)) {
-				
-				notFound.remove(dummyParents);
-				newMember.getParents()[count] = parent;
-			} else if (spouse != null && spouse.equals(dummyParents)) {
-				
-				notFound.remove(dummyParents);
-				newMember.getParents()[count] = spouse;
-			}
-			count++;
-		}
-		return notFound;
-	}
-	public Member getFamilyHead() {
-		return copyMember(head);
+	public Partners getFamilyHead() {
+		return head;
 	}
 }

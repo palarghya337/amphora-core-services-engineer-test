@@ -1,27 +1,14 @@
 package com.amphora.familyproject.bean;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class Member {
 
 	private int age;
 	private String name;
 	private Gender gender;
-	private Member spouse;
-	/**
-	 * Data type of variable "parents" I took array because parents
-	 * would be only two or fixed.
-	 */
-	private Member[] parents;
-	/**
-	 * Data type of variable "kids" I took List because there can be
-	 * many kids which is not not fixed and it would be easy to add
-	 * into a List cause insertion time for list is constant.
-	 */
-	private List<Member> kids;
+	private Partners partner;
+	private Partners parents;
 	public enum Gender {
-		Male, Female;
+		Male, Female, Other;
 	}
 	/**
 	 * Exposing parameterized constructor because this are the mandatory
@@ -33,11 +20,12 @@ public class Member {
 	 * @param age of the member
 	 * @param parents of the member
 	 */
-	public Member(String name, Gender gender, int age, Member[] parents) {
+	public Member(String name, Gender gender, int age,
+			Partners parents) {
 		
 		this.name = name;
-		this.gender = gender;
 		this.age = age;
+		this.gender = gender;
 		this.parents = parents;
 	}
 	public int getAge() {
@@ -58,39 +46,30 @@ public class Member {
 	public void setGender(Gender gender) {
 		this.gender = gender;
 	}
-	public Member getSpouse() {
-		return spouse;
+	public Partners getPartner() {
+		return partner;
 	}
-	public void setSpouse(Member spouse) {
-		this.spouse = spouse;
+	public void setPartner(Partners partner) {
+		this.partner = partner;
 	}
-	public Member[] getParents() {
+	public Partners getParents() {
 		return parents;
 	}
-	public void setParents(Member[] parents) {
+	public void setParents(Partners parents) {
 		this.parents = parents;
 	}
-	public List<Member> getKids() {
-		return kids;
-	}
-	public void setKids(List<Member> kids) {
-		this.kids = kids;
-	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + age;
 		result = prime * result + ((gender == null) ? 0 : gender.hashCode());
-		result = prime * result + ((kids == null) ? 0 : kids.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + Arrays.hashCode(parents);
-		result = prime * result + ((spouse == null) ? 0 : spouse.hashCode());
 		return result;
 	}
 	@Override
 	public boolean equals(Object obj) {
-		
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -111,7 +90,7 @@ public class Member {
 	}
 	@Override
 	public String toString() {
-		return "Member [age=" + age + ", name=" + name + ", gender=" + gender + ", spouse=" + spouse + ", parents="
-				+ Arrays.toString(parents) + ", kids=" + kids + "]";
+		return "Member [age=" + age + ", name=" + name + ", gender=" + gender + ", partner=" + partner + ", parents="
+				+ parents + "]";
 	}
 }
