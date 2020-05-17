@@ -5,7 +5,7 @@ public class Member {
 	private int age;
 	private String name;
 	private Gender gender;
-	private Partners partner;
+	private Partners lifePartners;
 	private Partners parents;
 	public enum Gender {
 		Male, Female, Other;
@@ -18,15 +18,12 @@ public class Member {
 	 * @param name of the family member
 	 * @param gender of the member
 	 * @param age of the member
-	 * @param parents of the member
 	 */
-	public Member(String name, Gender gender, int age,
-			Partners parents) {
+	public Member(String name, Gender gender, int age) {
 		
 		this.name = name;
 		this.age = age;
 		this.gender = gender;
-		this.parents = parents;
 	}
 	public int getAge() {
 		return age;
@@ -46,11 +43,11 @@ public class Member {
 	public void setGender(Gender gender) {
 		this.gender = gender;
 	}
-	public Partners getPartner() {
-		return partner;
+	public Partners getLifePartners() {
+		return lifePartners;
 	}
-	public void setPartner(Partners partner) {
-		this.partner = partner;
+	public void setLifePartners(Partners lifePartners) {
+		this.lifePartners = lifePartners;
 	}
 	public Partners getParents() {
 		return parents;
@@ -90,7 +87,7 @@ public class Member {
 	}
 	@Override
 	public String toString() {
-		return "Member [age=" + age + ", name=" + name + ", gender=" + gender + ", partner=" + partner + ", parents="
+		return "Member [age=" + age + ", name=" + name + ", gender=" + gender + ", partner=" + lifePartners + ", parents="
 				+ parents + "]";
 	}
 }

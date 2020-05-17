@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import com.amphora.familyproject.bean.Member;
 import com.amphora.familyproject.bean.Member.Gender;
-import com.amphora.familyproject.service.Family;
 import com.amphora.familyproject.bean.Partners;
+import com.amphora.familyproject.service.Family;
 
 /**
  * This is the dummy test class to check whether
@@ -21,63 +21,148 @@ public class FamilyTreeTest {
 	@Test
 	public void testInsert() {
 		
-		Member memberA = new Member("A", Gender.Male,
-				110, null);
-		Member spouceOfA = new Member("0", Gender.Female,
-				103, null);
+		Member akash = new Member("Akash Dutta", Gender.Male, 110);
+		Member pramila = new Member("Pramila Dey", Gender.Female, 103);
 		
-		Partners partners = new Partners(memberA, spouceOfA);
-		spouceOfA.setPartner(partners);
-		memberA.setPartner(partners);
+		Partners partners = new Partners(akash, pramila);
+		pramila.setLifePartners(partners);
+		akash.setLifePartners(partners);
 		Family family = new Family(partners);
 		
-		testInsertChildOfA(partners, family);
-		
+		insertChildOfAkashAndPramila(partners, family);
+		/*
+		 * I am adding spouse of all the child of Akash
+		 * and pramila
+		 **/
+		insertSpouseOfAllTheChildrens(family);
+		// Reyansh is the child of Akash and pramila
+		insertChildOfReyanshKakali(family);
+		insertSpouseOfChildOfReyanshKakali(family);
+		// Ballav is child of Reyansh and Kakali
+		insertChildOfHiyaBallav(family);
+		// Kaberi is child of Reyansh and Kakali
+		insertChildOfRajuKaberi(family);
+		// Kuntal is child of Reyansh and Kakali
+		insertChildOfNandiniKuntal(family);
+		// insert found another child of akash and pramila
+		insertFoundedChildOfAkashPramila(family);
+		//print(family.getFamilyHead());
 		print(family.getFamilyHead());
-		family.sort(family.getFamilyHead());
-		print(family.getFamilyHead());
+		System.out.println("----------------------------------");
+		family.getSortedListOfMembers()
+			.stream()
+			.forEach(member ->
+			System.out.println(member.getName() + "["
+			+ member.getAge() + "]"));
 	}
-	private void testInsertChildOfA(Partners head, Family family) {
+	private void insertFoundedChildOfAkashPramila(Family family) {
 		
-		Member b0 = new Member("B0", Gender.Male, 80, head);
-		Member child = family.addMember(b0, false);
+		Member akash = new Member("Akash Dutta", Gender.Male, 110);
+		Member pramila = new Member("Pramila Dey", Gender.Female, 103);
+		
+		Partners head = new Partners(akash, pramila);
+		Member arav = new Member("Arav Dutta", Gender.Male, 80);
+		arav.setParents(head);
+		arav = family.addMember(arav, false);
+		Assert.assertEquals(2, arav.getParents().getChildren().size());
+	}
+	private void insertSpouseOfAllTheChildrens(Family family) {
+		
+		Member reyansh = new Member("Reyansh Dutta", Gender.Male, 85);
+		Member kakali = new Member("Kakali Guha", Gender.Female, 80);
+		Partners kakaliReyansh = new Partners(reyansh, kakali);
+		kakali.setLifePartners(kakaliReyansh);
+		Member child = family.addMember(kakali, true);
+		
+		Assert.assertNotNull(child.getLifePartners().getFirstPartner().getParents());
+	}
+	private void insertChildOfAkashAndPramila(Partners head, Family family) {
+		
+		Member reyansh = new Member("Reyansh Dutta", Gender.Male, 85);
+		reyansh.setParents(head);
+		Member child = family.addMember(reyansh, false);
+		List<Member> children = child.getParents().getChildren();
+		Assert.assertEquals(1, children.size());
+	}
+	private void insertChildOfReyanshKakali(Family family) {
+		
+		Member reyansh = new Member("Reyansh Dutta", Gender.Male, 85);
+		Member kakali = new Member("Kakali Guha", Gender.Female, 80);
+		Partners head = new Partners(reyansh, kakali);
+		
+		Member kaberi = new Member("Kaberi Dutta", Gender.Female, 50);
+		kaberi.setParents(head);
+		Member child = family.addMember(kaberi, false);
 		List<Member> children = child.getParents().getChildren();
 		Assert.assertEquals(1, children.size());
 		
-		Member y0 = new Member("Y0", Gender.Female,
-				75, head);
-		y0.setPartner(new Partners(b0, y0));
-		child = family.addMember(y0, true);
-		Assert.assertEquals(1, children.size());
-		
-		Member a0 = new Member("A0", Gender.Male, 85, head);
-		child = family.addMember(a0, false);
-		Assert.assertEquals(2, children.size());
-		
-		
-		Member z0 = new Member("Z0", Gender.Female,
-				80, null);
-		Partners a0z0 = new Partners(a0, z0);
-		z0.setPartner(a0z0);
-		child = family.addMember(z0, true);
-		Assert.assertEquals(2, children.size());
-		
-		testInsertChildOfA0Z0(a0z0, family);
-	}
-	private void testInsertChildOfA0Z0(Partners a0z0, Family family) {
-		
-		Member a0z03 = new Member("A0Z03", Gender.Female, 50, a0z0);
-		Member child = family.addMember(a0z03, false);
-		List<Member> children = child.getParents().getChildren();
-		Assert.assertEquals(1, children.size());
-
-		Member a0z02 = new Member("A0Z02", Gender.Male, 52, a0z0);
-		child = family.addMember(a0z02, false);
+		Member ballav = new Member("Ballav Dutta", Gender.Male, 52);
+		ballav.setParents(head);
+		child = family.addMember(ballav, false);
 		Assert.assertEquals(2, children.size());
 
-		Member a0z01 = new Member("A0Z01", Gender.Male, 55, a0z0);
-		child = family.addMember(a0z01, false);
+		Member kuntal = new Member("Kuntal Dutta", Gender.Male, 55);
+		kuntal.setParents(head);
+		child = family.addMember(kuntal, false);
 		Assert.assertEquals(3, children.size());
+	}
+	private void insertSpouseOfChildOfReyanshKakali(Family family) {
+		
+		Member raju = new Member("Raju Sutradhar", Gender.Male, 52);
+		Member kaberi = new Member("Kaberi Dutta", Gender.Female, 50);
+		raju.setLifePartners(new Partners(raju, kaberi));
+		Member child = family.addMember(raju, true);
+		Assert.assertNotNull(child.getLifePartners().getSecondPartner().getParents());
+		
+		Member hiya = new Member("Hiya Roy", Gender.Female, 49);
+		Member ballav = new Member("Ballav Dutta", Gender.Male, 52);
+		hiya.setLifePartners(new Partners(ballav, hiya));
+		child = family.addMember(hiya, true);
+		Assert.assertNotNull(child.getLifePartners().getFirstPartner().getParents());
+		
+		Member nandini = new Member("Nandini Dey", Gender.Female, 50);
+		Member kuntal = new Member("Kuntal Dutta", Gender.Male, 55);
+		nandini.setLifePartners(new Partners(kuntal, nandini));
+		child = family.addMember(nandini, true);
+		Assert.assertNotNull(child.getLifePartners().getFirstPartner().getParents());
+	}
+	private void insertChildOfHiyaBallav(Family family) {
+		
+		Member hiya = new Member("Hiya Roy", Gender.Female, 49);
+		Member ballav = new Member("Ballav Dutta", Gender.Male, 52);
+		Partners head = new Partners(ballav, hiya);
+		
+		Member pratik = new Member("Pratik Dutta", Gender.Male, 22);
+		pratik.setParents(head);
+		Member child = family.addMember(pratik, false);
+		Assert.assertEquals(1, child.getParents().getChildren().size());
+		
+		Member pooja = new Member("Pooja Dutta", Gender.Female, 26);
+		pooja.setParents(head);
+		child = family.addMember(pooja, false);
+		Assert.assertEquals(2, child.getParents().getChildren().size());
+	}
+	private void insertChildOfRajuKaberi(Family family) {
+		
+		Member raju = new Member("Raju Sutradhar", Gender.Male, 52);
+		Member kaberi = new Member("Kaberi Dutta", Gender.Female, 50);
+		Partners head = new Partners(raju, kaberi);
+		
+		Member roshni = new Member("Roshni Sutradhar", Gender.Female, 30);
+		roshni.setParents(head);
+		Member child = family.addMember(roshni, false);
+		Assert.assertEquals(1, child.getParents().getChildren().size());
+	}
+	private void insertChildOfNandiniKuntal(Family family) {
+		
+		Member nandini = new Member("Nandini Dey", Gender.Female, 50);
+		Member kuntal = new Member("Kuntal Dutta", Gender.Male, 55);
+		Partners head = new Partners(kuntal, nandini);
+		
+		Member sayan = new Member("Sayan Dutta", Gender.Male, 32);
+		sayan.setParents(head);
+		sayan = family.addMember(sayan, false);
+		Assert.assertEquals(1, sayan.getParents().getChildren().size());
 	}
 	public void print(Partners parent) {
 		
@@ -86,13 +171,20 @@ public class FamilyTreeTest {
 			StringBuilder str = new StringBuilder();
 			for (Member child: parent.getChildren()) {
 				
-				str.append(child.getName() + ", ");
-				print(child.getPartner());
+				str.append(child.getName());
+				str.append("[");
+				str.append(child.getAge());
+				str.append("], ");
+				print(child.getLifePartners());
 			}
-			System.out.println(str.substring(0, str.length() - 2)
-					+ " is/are children of "
-					+ parent.getHubby().getName()
-					+ " and " + parent.getWifey().getName());
+			StringBuilder output = new StringBuilder();
+			output.append(str.substring(0, str.length() - 2));
+			output.append(" is/are children of ");
+			output.append(parent.getFirstPartner().getName());
+			output.append("[").append(parent.getFirstPartner().getAge()).append("] and ");
+			output.append(parent.getSecondPartner().getName());
+			output.append("[").append(parent.getSecondPartner().getAge()).append("]");
+			System.out.println(output);
 		}
 	}
 }

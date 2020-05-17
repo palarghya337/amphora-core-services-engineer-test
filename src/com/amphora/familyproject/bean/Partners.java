@@ -12,8 +12,8 @@ import java.util.List;
  */
 public class Partners {
 
-	private Member hubby;
-	private Member wifey;
+	private Member firstPartner;
+	private Member secondPartner;
 	/**
 	 * Data type of variable "kids" I took List because there can be
 	 * many kids which is not not fixed and it would be easy to add
@@ -21,22 +21,22 @@ public class Partners {
 	 */
 	private List<Member> children;
 	
-	public Partners(Member hubby, Member wifey) {
+	public Partners(Member firstLifePartner, Member secondLifePartner) {
 		
-		this.hubby = hubby;
-		this.wifey = wifey;
+		this.firstPartner = firstLifePartner;
+		this.secondPartner = secondLifePartner;
 	}
-	public Member getHubby() {
-		return hubby;
+	public Member getFirstPartner() {
+		return firstPartner;
 	}
-	public void setHubby(Member hubby) {
-		this.hubby = hubby;
+	public void setFirstPartner(Member firstLifePartner) {
+		this.firstPartner = firstLifePartner;
 	}
-	public Member getWifey() {
-		return wifey;
+	public Member getSecondPartner() {
+		return secondPartner;
 	}
-	public void setWifey(Member wifey) {
-		this.wifey = wifey;
+	public void setSecondPartner(Member secondLifePartner) {
+		this.secondPartner = secondLifePartner;
 	}
 	public List<Member> getChildren() {
 		return children;
@@ -48,8 +48,8 @@ public class Partners {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((hubby == null) ? 0 : hubby.hashCode());
-		result = prime * result + ((wifey == null) ? 0 : wifey.hashCode());
+		result = prime * result + ((firstPartner == null) ? 0 : firstPartner.hashCode());
+		result = prime * result + ((secondPartner == null) ? 0 : secondPartner.hashCode());
 		return result;
 	}
 	@Override
@@ -61,20 +61,20 @@ public class Partners {
 		if (getClass() != obj.getClass())
 			return false;
 		Partners other = (Partners) obj;
-		if (hubby == null) {
-			if (other.hubby != null)
+		if (firstPartner == null) {
+			if (other.firstPartner != null)
 				return false;
-		} else if (!hubby.equals(other.hubby))
+		} else if (!firstPartner.equals(other.firstPartner))
 			return false;
-		if (wifey == null) {
-			if (other.wifey != null)
+		if (secondPartner == null) {
+			if (other.secondPartner != null)
 				return false;
-		} else if (!wifey.equals(other.wifey))
+		} else if (!secondPartner.equals(other.secondPartner))
 			return false;
 		return true;
 	}
 	@Override
 	public String toString() {
-		return "Partners [hubby=" + hubby + ", wifey=" + wifey + ", children=" + children + "]";
+		return "Partners [hubby=" + firstPartner + ", wifey=" + secondPartner + ", children=" + children + "]";
 	}
 }
